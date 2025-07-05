@@ -1,0 +1,33 @@
+extends includes/layout.pug
+
+block content
+  include ./includes/mixins/indexPostUI.pug
+  +indexPostUI
+
+  //- “Ù¿÷≤•∑≈∆˜£®∞¥ Pug ”Ô∑®±‡–¥£©
+  link(rel='stylesheet', href='https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css')
+  script(src='https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js')
+
+  #aplayer  //- Pug ÷– div#aplayer µƒºÚ–¥
+
+  script.
+    // ≥ı ºªØ≤•∑≈∆˜
+    const ap = new APlayer({
+      container: document.getElementById('aplayer'),
+      fixed: true,
+      autoplay: false,
+      theme: '#3EAF7C',
+      audio: [
+        {
+          name: 'Anomaly',
+          artist: 'Lights & Motion',
+          url: '/music/Anomaly.mp3',
+          cover: '/music/Anomaly.jpg'
+        }
+      ]
+    });
+
+    // ¥ÌŒÛº‡Ã˝£®∑Ω±„µ˜ ‘£©
+    ap.on('error', (e) => {
+      console.error('“Ù¿÷º”‘ÿ ß∞‹:', e);
+    });

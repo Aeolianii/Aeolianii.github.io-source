@@ -1,0 +1,11 @@
+- class_name: 推荐站点
+  class_desc: 学无止境
+  link_list:
+    - name: 灵茶山艾府
+      link: https://space.bilibili.com/206214
+      avatar: /img/link1.jpg
+      descr: 学习算法的大佬
+    - name: csdn
+      link: https://www.csdn.net/
+      avatar: https://img.xyzs.com/g/202106/241423309trz.png
+      descr: 技术交流网站

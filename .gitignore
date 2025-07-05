@@ -1,0 +1,8 @@
+# Hexo默认忽略规则
+.DS_Store
+Thumbs.db
+db.json
+*.log
+node_modules/    # 依赖包目录
+public/          # 生成的静态文件
+.deploy*/        # 部署临时文件
