@@ -285,7 +285,7 @@ aside:
       enable: true
       icon: fab fa-github
       text: Follow Me
-      link: https://github.com/xxxxxx
+      link: https://github.com/Aeolianii
   card_announcement:
     enable: true
     content: 欢迎来到我的博客，技术不足，请大家多多指教
@@ -306,7 +306,7 @@ aside:
   card_categories:
     enable: true
     # If set 0 will show all
-    limit: 8
+    limit: 0
     # Choose: none / true / false
     expand: none
     sort_order:
