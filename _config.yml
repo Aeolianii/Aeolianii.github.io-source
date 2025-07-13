@@ -4,7 +4,7 @@
 
 # Site
 title: Aeolian的个人博客
-subtitle: ''
+# subtitle: ''
 description: '是否把放风筝也当硬仗才算正常'
 keywords:
 author: Aeolian
@@ -13,7 +13,7 @@ timezone: 'Asia/Shanghai'
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: http://example.com
+url: https://aeolianii.github.io
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
