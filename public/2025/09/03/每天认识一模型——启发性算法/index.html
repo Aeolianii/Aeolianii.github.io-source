@@ -1,0 +1,317 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>每天认识一模型--启发性算法 | Aeolian的个人博客</title><meta name="author" content="Aeolian"><meta name="copyright" content="Aeolian"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="今天我们来学习三种启发性算法：遗传算法与模拟退火算法还有蒙特卡洛算法，当题目的约束条件较为复杂，难以使用常规算法进行求解时，我们可以尝试使用以上三种算法，通过模拟自然现象或生物行为的通用策略，在可接受的时间内寻找复杂优化问题的近似最优解。本文文案来自豆包。 一、遗传算法1、遗传算法的概述遗传算法的灵感源自达尔文的进化论，将优化问题中的 “可行解” 类比为生物 “个体”，“解的质量” 类比为 “个体">
+<meta property="og:type" content="article">
+<meta property="og:title" content="每天认识一模型--启发性算法">
+<meta property="og:url" content="https://aeolianii.github.io/2025/09/03/%E6%AF%8F%E5%A4%A9%E8%AE%A4%E8%AF%86%E4%B8%80%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E5%90%AF%E5%8F%91%E6%80%A7%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="Aeolian的个人博客">
+<meta property="og:description" content="今天我们来学习三种启发性算法：遗传算法与模拟退火算法还有蒙特卡洛算法，当题目的约束条件较为复杂，难以使用常规算法进行求解时，我们可以尝试使用以上三种算法，通过模拟自然现象或生物行为的通用策略，在可接受的时间内寻找复杂优化问题的近似最优解。本文文案来自豆包。 一、遗传算法1、遗传算法的概述遗传算法的灵感源自达尔文的进化论，将优化问题中的 “可行解” 类比为生物 “个体”，“解的质量” 类比为 “个体">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://aeolianii.github.io/img/post10.jpg">
+<meta property="article:published_time" content="2025-09-03T04:14:26.000Z">
+<meta property="article:modified_time" content="2025-09-04T12:21:44.232Z">
+<meta property="article:author" content="Aeolian">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://aeolianii.github.io/img/post10.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "每天认识一模型--启发性算法",
+  "url": "https://aeolianii.github.io/2025/09/03/%E6%AF%8F%E5%A4%A9%E8%AE%A4%E8%AF%86%E4%B8%80%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E5%90%AF%E5%8F%91%E6%80%A7%E7%AE%97%E6%B3%95/",
+  "image": "https://aeolianii.github.io/img/post10.jpg",
+  "datePublished": "2025-09-03T04:14:26.000Z",
+  "dateModified": "2025-09-04T12:21:44.232Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Aeolian",
+      "url": "https://aeolianii.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://aeolianii.github.io/2025/09/03/%E6%AF%8F%E5%A4%A9%E8%AE%A4%E8%AF%86%E4%B8%80%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E5%90%AF%E5%8F%91%E6%80%A7%E7%AE%97%E6%B3%95/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '每天认识一模型--启发性算法',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/Aeolian.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">10</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/post10.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Aeolian的个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">每天认识一模型--启发性算法</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">每天认识一模型--启发性算法</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-09-03T04:14:26.000Z" title="发表于 2025-09-03 12:14:26">2025-09-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-09-04T12:21:44.232Z" title="更新于 2025-09-04 20:21:44">2025-09-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%A8%A1%E5%A4%87%E6%88%98/">数模备战</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>今天我们来学习三种启发性算法：遗传算法与模拟退火算法还有蒙特卡洛算法，当题目的约束条件较为复杂，难以使用常规算法进行求解时，我们可以尝试使用以上三种算法，通过模拟自然现象或生物行为的通用策略，在可接受的时间内寻找复杂优化问题的近似最优解。本文文案来自豆包。</p>
+<h1 id="一、遗传算法"><a href="#一、遗传算法" class="headerlink" title="一、遗传算法"></a>一、遗传算法</h1><h2 id="1、遗传算法的概述"><a href="#1、遗传算法的概述" class="headerlink" title="1、遗传算法的概述"></a>1、遗传算法的概述</h2><p>遗传算法的灵感源自达尔文的进化论，将优化问题中的 “可行解” 类比为生物 “个体”，“解的质量” 类比为 “个体适应度”，通过模拟生物的<strong>选择、交叉、变异</strong>三大进化操作，驱动种群向 “适应度更高”（即解更优）的方向进化。以下是遗传算法中各名词的含义：<br><img src="/../img/post10_img/1.png" alt="遗传算法名词图示"></p>
+<h2 id="2、遗传算法的核心步骤"><a href="#2、遗传算法的核心步骤" class="headerlink" title="2、遗传算法的核心步骤"></a>2、遗传算法的核心步骤</h2><p>遗传算法的迭代流程具有强规范性，数学建模中需严格按步骤实现，关键在于<strong>编码方式、适应度函数、遗传操作、参数设置</strong>四大模块的设计。以下是标准流程的详细拆解：</p>
+<h3 id="步骤-1：问题建模与编码（将-“解”-转化为-“染色体”）"><a href="#步骤-1：问题建模与编码（将-“解”-转化为-“染色体”）" class="headerlink" title="步骤 1：问题建模与编码（将 “解” 转化为 “染色体”）"></a>步骤 1：问题建模与编码（将 “解” 转化为 “染色体”）</h3><p>编码是遗传算法的基础 —— 需将优化问题的决策变量转化为计算机可处理的 “染色体”（通常是二进制串或实数串）。编码方式直接影响算法效率，需根据问题类型选择：<br><img src="/../img/post10_img/2.png" alt="遗传算法编码图示"><br><strong>建模示例</strong>：若优化问题为 “最小化 f (x1,x2)&#x3D;x1²+x2²，s.t. x1∈[0,5], x2∈[0,5]”，采用实数编码时，染色体可表示为 [x1, x2]，其中 x1 和 x2 为 [0,5] 内的实数。</p>
+<h3 id="步骤-2：初始化种群（生成初始可行解集合）"><a href="#步骤-2：初始化种群（生成初始可行解集合）" class="headerlink" title="步骤 2：初始化种群（生成初始可行解集合）"></a>步骤 2：初始化种群（生成初始可行解集合）</h3><p>种群是迭代的起点，需随机生成一定数量的 “个体”（可行解），种群规模 N 的选择需平衡效率与多样性：</p>
+<ul>
+<li><strong>种群规模 N</strong>：太小易导致种群多样性不足，陷入局部最优；太大则增加计算量，降低迭代速度。数学建模中常用 N&#x3D;20~100（需根据问题复杂度调整，如高维问题取较大 N）。</li>
+<li><strong>初始化方法</strong>：在决策变量的约束范围内随机生成个体（如上述示例中，x1 和 x2 各随机取 [0,5] 内的实数，生成 N 个 [x1,x2] 向量作为初始种群）。</li>
+</ul>
+<h3 id="步骤-3：计算适应度（评估解的优劣）"><a href="#步骤-3：计算适应度（评估解的优劣）" class="headerlink" title="步骤 3：计算适应度（评估解的优劣）"></a>步骤 3：计算适应度（评估解的优劣）</h3><p>适应度函数是遗传算法的 “指挥棒”，需将优化问题的<strong>目标函数</strong>转化为 “适应度值”（适应度越高，解越优），核心是处理 “最小化” 与 “最大化” 的转换，以及约束条件。</p>
+<h4 id="（1）目标函数与适应度的转换"><a href="#（1）目标函数与适应度的转换" class="headerlink" title="（1）目标函数与适应度的转换"></a>（1）目标函数与适应度的转换</h4><ul>
+<li>若问题为<strong>最大化目标函数 f (x)</strong>：直接令适应度函数 F (x)&#x3D;f (x)（适应度与目标函数值正相关）。</li>
+<li>若问题为<strong>最小化目标函数 f (x)</strong>：需将其转换为最大化问题，常用方法：<ul>
+<li>倒数法：F (x)&#x3D;1&#x2F;(f (x)+C)（C 为常数，避免 f (x) 为 0 时分母为 0）；</li>
+<li>负数值法：F (x)&#x3D;M - f (x)（M 为 f (x) 的上界，需根据问题估计）。</li>
+</ul>
+</li>
+</ul>
+<h4 id="（2）约束条件的处理（关键！数学建模常考）"><a href="#（2）约束条件的处理（关键！数学建模常考）" class="headerlink" title="（2）约束条件的处理（关键！数学建模常考）"></a>（2）约束条件的处理（关键！数学建模常考）</h4><p>若问题含约束（如 g (x)≤0, h (x)&#x3D;0），需通过 “惩罚机制” 将不可行解的适应度降低，避免其被保留。常用惩罚函数法：</p>
+<ul>
+<li>对不可行解，在适应度中加入惩罚项，公式为：F’(x) &#x3D; F(x) - P(x)，其中 P (x) 为惩罚项（不可行程度越严重，P (x) 越大）。</li>
+</ul>
+<p>示例：若约束为 x1+x2≤6，对 x1+x2&gt;6 的个体，惩罚项可设为 P (x)&#x3D;k*(x1+x2-6)（k 为惩罚系数，需调试，如 k&#x3D;100）。</p>
+<h3 id="步骤-4：遗传操作（核心迭代环节）"><a href="#步骤-4：遗传操作（核心迭代环节）" class="headerlink" title="步骤 4：遗传操作（核心迭代环节）"></a>步骤 4：遗传操作（核心迭代环节）</h3><p>遗传操作包括<strong>选择、交叉、变异</strong>，是驱动种群进化的关键，需按顺序执行：</p>
+<h4 id="（1）选择操作：保留优秀个体"><a href="#（1）选择操作：保留优秀个体" class="headerlink" title="（1）选择操作：保留优秀个体"></a>（1）选择操作：保留优秀个体</h4><p>选择的目的是从当前种群中筛选出适应度高的个体，作为 “父代” 参与后续交叉。常用方法：<br><img src="/../img/post10_img/3.png" alt="遗传算法选择操作图示"><br><strong>建模建议</strong>：优先使用 “锦标赛选择 + 精英保留”，兼顾多样性与收敛速度。</p>
+<h4 id="（2）交叉操作：生成子代（核心创新环节）"><a href="#（2）交叉操作：生成子代（核心创新环节）" class="headerlink" title="（2）交叉操作：生成子代（核心创新环节）"></a>（2）交叉操作：生成子代（核心创新环节）</h4><p>交叉是遗传算法产生新解的主要方式，通过父代个体交换基因，生成兼具两者特征的子代。交叉概率 Pc（如 Pc&#x3D;0.6~0.9）控制交叉发生的频率（Pc 太低保真度低，太高易破坏优秀基因）。<br>不同编码方式对应不同交叉方法：</p>
+<ul>
+<li><strong>二进制编码→单点交叉 &#x2F; 两点交叉</strong>：<ul>
+<li>单点交叉：随机选择一个交叉点，交换父代交叉点后的基因（如父代 1：0011|01，父代 2：1100|10，交叉后子代 1：001110，子代 2：110001）；</li>
+</ul>
+</li>
+<li><strong>实数编码→算术交叉 &#x2F; 模拟二进制交叉（SBX）</strong>：<ul>
+<li>算术交叉：子代基因 &#x3D;α* 父代 1 基因 + (1-α)* 父代 2 基因（α 为 [0,1] 内的随机数，如父代 1:x1&#x3D;2.0，父代 2:x1&#x3D;4.0，α&#x3D;0.3，子代 x1&#x3D;2.6）；</li>
+<li>SBX：更适合连续优化，模拟二进制编码的交叉特性，生成的子代更接近父代，保证解的合理性。</li>
+</ul>
+</li>
+</ul>
+<p><strong>建模建议</strong>：连续优化问题优先用 SBX 交叉，离散问题用单点交叉。</p>
+<h4 id="（3）变异操作：引入新基因（避免局部最优）"><a href="#（3）变异操作：引入新基因（避免局部最优）" class="headerlink" title="（3）变异操作：引入新基因（避免局部最优）"></a>（3）变异操作：引入新基因（避免局部最优）</h4><p>变异是遗传算法维持种群多样性的关键，通过随机改变个体的某个基因，引入新的可行解，避免种群 “早熟”。变异概率 Pm（如 Pm&#x3D;0.001~0.01）需极小（Pm 太大会导致算法退化为随机搜索）。<br>不同编码方式对应不同变异方法：</p>
+<ul>
+<li><strong>二进制编码→位翻转变异</strong>：随机选择一个基因位，将 0 变为 1 或 1 变为 0（如染色体 001101→变异后 001001）；</li>
+<li><strong>实数编码→高斯变异</strong>：对选中的基因，在其当前值基础上叠加一个高斯随机数（如 x1&#x3D;2.35，变异后 x1&#x3D;2.35 + N (0,σ²)，σ 为标准差，控制变异幅度）</li>
+</ul>
+<p><strong>建模建议</strong>：实数编码用高斯变异，σ 可随迭代次数减小（前期大变异探索解空间，后期小变异精细搜索）。</p>
+<h3 id="步骤-5：判断停止条件（迭代终止）"><a href="#步骤-5：判断停止条件（迭代终止）" class="headerlink" title="步骤 5：判断停止条件（迭代终止）"></a>步骤 5：判断停止条件（迭代终止）</h3><p>当满足以下任一条件时，算法停止，输出当前种群中的最优个体作为最终解：</p>
+<ul>
+<li>1、迭代次数达到预设值（最常用，如迭代 100~500 次，需根据问题复杂度调整）；</li>
+<li>2、最优适应度值连续多代（如 10 代）无明显改进（说明算法收敛到稳定解）；</li>
+<li>3、最优适应度值达到预设精度（如目标函数值与理论最优值的差小于 1e-6，若已知理论最优）。</li>
+</ul>
+<h2 id="3、遗传算法的关键参数调优（数学建模得分关键）"><a href="#3、遗传算法的关键参数调优（数学建模得分关键）" class="headerlink" title="3、遗传算法的关键参数调优（数学建模得分关键）"></a>3、遗传算法的关键参数调优（数学建模得分关键）</h2><p>遗传算法的性能高度依赖参数设置，不当的参数会导致 “早熟”（陷入局部最优）或 “收敛慢”。以下是核心参数的调优建议：<br><img src="/../img/post10_img/4.png" alt="遗传算法参数图示"><br><strong>调优技巧</strong>：可通过 “控制变量法” 测试不同参数组合（如固定 N&#x3D;50、G&#x3D;300，测试 Pc&#x3D;0.7、0.8、0.9 的效果），选择最优参数。</p>
+<h2 id="4、遗传算法在数学建模中的典型应用场景"><a href="#4、遗传算法在数学建模中的典型应用场景" class="headerlink" title="4、遗传算法在数学建模中的典型应用场景"></a>4、遗传算法在数学建模中的典型应用场景</h2><p>遗传算法在数模比赛中应用广泛，尤其适合以下问题：</p>
+<ul>
+<li><strong>函数优化问题</strong>：如非线性、非凸、多峰函数的极值求解（传统梯度法易陷入局部最优，GA 可通过种群多样性找到全局最优）；</li>
+<li><strong>组合优化问题</strong>：如旅行商问题（TSP）、背包问题、车辆路径规划（VRP）（NP-hard 问题，枚举法无法求解，GA 可快速找到近似最优解）；</li>
+<li><strong>多目标优化问题</strong>：如 “最小化成本 + 最大化收益”（需结合非支配排序遗传算法 NSGA-II，生成 Pareto 最优解集）；</li>
+<li><strong>带约束的优化问题</strong>：如工程设计中的多约束优化（通过惩罚函数处理约束，无需满足 KKT 条件）。</li>
+</ul>
+<h2 id="5、遗传算法的优缺点与改进方向"><a href="#5、遗传算法的优缺点与改进方向" class="headerlink" title="5、遗传算法的优缺点与改进方向"></a>5、遗传算法的优缺点与改进方向</h2><h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>鲁棒性强：不依赖目标函数的连续性、可微性，适用于各类复杂优化问题；</li>
+<li>全局搜索能力：通过种群迭代和变异操作，能有效避免局部最优；</li>
+<li>易实现：核心步骤（选择、交叉、变异）逻辑清晰，可通过 Python（如deap库、scipy库）或 MATLAB 快速编程实现。</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>收敛速度慢：后期种群多样性降低，迭代效率下降；</li>
+<li>参数敏感：种群规模、交叉 &#x2F; 变异概率等参数需反复调试；</li>
+<li>局部搜索精度不足：相比梯度下降等局部优化方法，最终解的精度可能较低。</li>
+</ul>
+<h3 id="改进方向（数模加分点）"><a href="#改进方向（数模加分点）" class="headerlink" title="改进方向（数模加分点）"></a>改进方向（数模加分点）</h3><ul>
+<li>混合算法：结合局部优化方法（如 GA + 梯度下降），先用 GA 全局搜索，再用梯度下降精细优化；</li>
+<li>自适应参数：让 Pc、Pm 随迭代次数动态调整（如适应度方差大时增大 Pc，方差小时增大 Pm）；</li>
+<li>多目标改进：采用 NSGA-II、MOEA&#x2F;D 等多目标遗传算法，处理多目标优化问题；</li>
+<li>精英策略增强：保留多代最优个体，避免优秀基因丢失。<br><strong>具体代码实现需具体情况具体分析</strong></li>
+</ul>
+<h1 id="二、模拟退火算法"><a href="#二、模拟退火算法" class="headerlink" title="二、模拟退火算法"></a>二、模拟退火算法</h1><h2 id="1、模拟退火算法的概述"><a href="#1、模拟退火算法的概述" class="headerlink" title="1、模拟退火算法的概述"></a>1、模拟退火算法的概述</h2><p>模拟退火算法的灵感源于物理中的<strong>金属退火过程</strong>：<br>金属加热到高温时，原子动能大，可自由运动（对应算法的 “随机搜索”）；随着温度缓慢降低，原子动能减小，逐渐趋于稳定排列（对应算法的 “局部微调”）；若降温过快，原子会被困在无序状态（对应算法陷入 “局部最优”）。<br>算法将这一过程映射为优化问题：</p>
+<ul>
+<li>“<strong>温度 T</strong>”：控制搜索的 “随机性”—— 高温时允许接受较差的解（探索新区域），低温时只接受更优解（ exploitation，精炼当前区域）。</li>
+<li>“<strong>能量 E</strong>”：对应优化问题的 “目标函数值”（如 TSP 中的总路程、函数优化中的函数值），算法的目标是找到 “能量最低” 的状态（即目标函数最小 &#x2F; 最大值）。</li>
+<li>“<strong>Metropolis 准则</strong>”：决定是否接受新解的核心规则 —— 即使新解比当前解差，也有一定概率接受它，概率随温度降低而减小（这是 SA 跳出局部最优的关键）。</li>
+</ul>
+<h2 id="2、算法核心原理与关键公式"><a href="#2、算法核心原理与关键公式" class="headerlink" title="2、算法核心原理与关键公式"></a>2、算法核心原理与关键公式</h2><h3 id="（1）-Metropolis-准则（接受新解的概率）"><a href="#（1）-Metropolis-准则（接受新解的概率）" class="headerlink" title="（1） Metropolis 准则（接受新解的概率）"></a>（1） Metropolis 准则（接受新解的概率）</h3><p>设当前解为 (S_{\text{curr}})，其目标函数值为 (f(S_{\text{curr}}))；通过随机扰动生成新解 (S_{\text{new}})，其目标函数值为 (f(S_{\text{new}}))。定义 “能量差” (\Delta f &#x3D; f(S_{\text{new}}) - f(S_{\text{curr}}))：</p>
+<ul>
+<li>若 (\Delta f \leq 0)（新解更优）：直接接受新解（(S_{\text{curr}} \leftarrow S_{\text{new}})）。</li>
+<li>若 (\Delta f &gt; 0)（新解更差）：以概率 (P &#x3D; e^{-\Delta f &#x2F; T}) 接受新解 —— 温度 T 越高，P 越大（越容易接受差解，探索新区域）；T 越低，P 越小（几乎不接受差解，锁定最优区域）。</li>
+</ul>
+<h3 id="（2）-温度衰减策略（降温-schedule）"><a href="#（2）-温度衰减策略（降温-schedule）" class="headerlink" title="（2） 温度衰减策略（降温 schedule）"></a>（2） 温度衰减策略（降温 schedule）</h3><p>温度的降低方式直接影响算法性能：降温过快会陷入局部最优，降温过慢则耗时过长。数模中常用的降温策略有：</p>
+<ul>
+<li><strong>指数降温（最经典）</strong>：(T_{k+1} &#x3D; \alpha \cdot T_k)，其中 (\alpha \in [0.8, 0.99])（称为 “降温系数”）。<ul>
+<li>例：初始温度 (T_0&#x3D;1000)，(\alpha&#x3D;0.95)，则第 2 轮温度 (T_1&#x3D;950)，第 3 轮 (T_2&#x3D;902.5)，以此类推，温度缓慢下降。‘</li>
+</ul>
+</li>
+<li><strong>线性降温</strong>：(T_{k+1} &#x3D; T_k - \beta)（(\beta) 为固定降温步长），但后期易因 T 骤降导致搜索不充分，较少单独使用。</li>
+</ul>
+<h3 id="（3）-迭代终止条件"><a href="#（3）-迭代终止条件" class="headerlink" title="（3） 迭代终止条件"></a>（3） 迭代终止条件</h3><p>算法需设定终止条件，避免无限循环。数模中常用：</p>
+<ul>
+<li><strong>温度阈值</strong>：当温度 (T_k \leq T_{\text{min}})（如 (T_{\text{min}}&#x3D;1e-8)）时，终止迭代（此时已无概率接受差解，搜索稳定）。</li>
+<li><strong>迭代次数</strong>：设定最大迭代轮数（如 1000 轮），或连续多轮（如 100 轮）目标函数值无改进时终止。</li>
+</ul>
+<h2 id="3、算法完整流程"><a href="#3、算法完整流程" class="headerlink" title="3、算法完整流程"></a>3、算法完整流程</h2><h3 id="（1）初始化参数"><a href="#（1）初始化参数" class="headerlink" title="（1）初始化参数"></a>（1）初始化参数</h3><ul>
+<li>确定目标函数 (f(S))（需最小化）；</li>
+<li>设定初始温度 (T_0)（通常取较大值，如 1000~10000，需根据问题规模调整）；</li>
+<li>设定降温系数 (\alpha)（推荐 0.9<del>0.99）、最低温度 (T_{\text{min}})（如 1e-6</del>1e-8）；</li>
+<li>随机生成初始解 (S_{\text{curr}})，计算其目标函数值 (f_{\text{curr}} &#x3D; f(S_{\text{curr}}))；</li>
+<li>记录全局最优解 (S_{\text{best}} &#x3D; S_{\text{curr}})，</li>
+<li>全局最优值 (f_{\text{best}} &#x3D; f_{\text{curr}})。</li>
+</ul>
+<h3 id="（2）温度循环（外层循环）"><a href="#（2）温度循环（外层循环）" class="headerlink" title="（2）温度循环（外层循环）"></a>（2）温度循环（外层循环）</h3><p>当 (T &gt; T_{\text{min}}) 时，执行邻域搜索：在当前温度下，多次随机扰动生成新解（通常内层循环次数为 50~200 次，保证充分搜索）：</p>
+<ul>
+<li>a. 对 (S_{\text{curr}}) 进行 “微小扰动”，生成新解 (S_{\text{new}})（扰动方式需结合问题设计，见下文 “关键设计”）；</li>
+<li>b. 计算 (f_{\text{new}} &#x3D; f(S_{\text{new}}))，求 (\Delta f &#x3D; f_{\text{new}} - f_{\text{curr}})；</li>
+<li>c. 按 Metropolis 准则判断是否接受 (S_{\text{new}})：<ul>
+<li>若 (\Delta f \leq 0)：接受，令 (S_{\text{curr}} &#x3D; S_{\text{new}})，(f_{\text{curr}} &#x3D; f_{\text{new}})；</li>
+<li>若 (\Delta f &gt; 0)：生成 [0,1] 区间的随机数 r，若 (r &lt; e^{-\Delta f &#x2F; T})，则接受 (S_{\text{new}})，否则保留 (S_{\text{curr}})；</li>
+</ul>
+</li>
+<li>d. 若 (f_{\text{new}} &lt; f_{\text{best}})：更新全局最优解 (S_{\text{best}} &#x3D; S_{\text{new}})，(f_{\text{best}} &#x3D; f_{\text{new}})。</li>
+<li><strong>降温</strong>：按策略降低温度，如 (T &#x3D; \alpha \cdot T)。</li>
+</ul>
+<h3 id="（3）输出结果"><a href="#（3）输出结果" class="headerlink" title="（3）输出结果"></a>（3）输出结果</h3><p>迭代终止后，输出全局最优解 (S_{\text{best}}) 和全局最优值 (f_{\text{best}})。</p>
+<h2 id="4、数模中的关键设计"><a href="#4、数模中的关键设计" class="headerlink" title="4、数模中的关键设计"></a>4、数模中的关键设计</h2><p>(1)邻域扰动方式（核心！需结合问题设计）<br>“邻域” 指与当前解 (S_{\text{curr}}) 相近的解的集合，扰动方式需保证 “新解与当前解差异小、且能覆盖所有可能解”。<br>(2) 参数调优（数模中需反复测试）算法的 3 个核心参数（(T_0, \alpha, T_{\text{min}})）无固定标准，需根据问题规模调整，推荐初始测试范围：</p>
+<ul>
+<li><strong>初始温度 (T_0)</strong>：若问题规模大（如 TSP 有 50 个城市），(T_0) 取 1000<del>10000；规模小（如 10 个城市），取 100</del>500。<ul>
+<li>验证方式：初始时接受差解的概率应较高（如 80% 以上），若初始 P 过低，需增大 (T_0)。</li>
+</ul>
+</li>
+<li><strong>降温系数 (\alpha)</strong>：推荐 0.9<del>0.99—— 若追求精度（数模通常需要），取 0.95</del>0.99（降温慢，搜索充分）；若追求速度，取 0.9~0.95。</li>
+<li><strong>最低温度 (T_{\text{min}})</strong>：通常取 1e-6~1e-8，确保温度足够低时，不再接受任何差解。</li>
+</ul>
+<h2 id="5、算法优缺点"><a href="#5、算法优缺点" class="headerlink" title="5、算法优缺点"></a>5、算法优缺点</h2><p>在数模中，是否选择 SA 需结合问题特点判断：</p>
+<h3 id="优点-1"><a href="#优点-1" class="headerlink" title="优点"></a>优点</h3><ul>
+<li><strong>全局搜索能力强</strong>：通过 Metropolis 准则接受差解，能跳出局部最优，大概率找到全局最优。</li>
+<li><strong>实现简单</strong>：框架固定，无需复杂数据结构，仅需设计邻域和调参。</li>
+<li><strong>适用性广</strong>：可处理离散优化（TSP、背包）、连续优化（函数极值）、整数规划等多种问题，是数模中的 “万能工具” 之一。</li>
+</ul>
+<h3 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li><strong>收敛速度慢</strong>：低温时需多次迭代，整体耗时较长（数模中可通过控制迭代次数平衡精度与速度）。</li>
+<li><strong>参数敏感</strong>：(T_0, \alpha) 等参数需反复测试，若参数不当，性能会大幅下降。</li>
+<li><strong>缺乏理论保证</strong>：虽能大概率收敛到全局最优，但无法保证 100% 找到（数模中可通过多次运行取最优结果缓解）。</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://aeolianii.github.io">Aeolian</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://aeolianii.github.io/2025/09/03/%E6%AF%8F%E5%A4%A9%E8%AE%A4%E8%AF%86%E4%B8%80%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E5%90%AF%E5%8F%91%E6%80%A7%E7%AE%97%E6%B3%95/">https://aeolianii.github.io/2025/09/03/%E6%AF%8F%E5%A4%A9%E8%AE%A4%E8%AF%86%E4%B8%80%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E5%90%AF%E5%8F%91%E6%80%A7%E7%AE%97%E6%B3%95/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://aeolianii.github.io" target="_blank">Aeolian的个人博客</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/post10.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/07/30/%E7%81%B5%E7%A5%9E%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89%E2%80%94%E2%80%94%E4%BA%8C%E5%8F%89%E6%A0%91/" title="灵神基础算法系列（四）--二叉树"><img class="cover" src="/img/post9.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">灵神基础算法系列（四）--二叉树</div></div><div class="info-2"><div class="info-item-1">今天我们来学习灵神基础算法系列的第九期、第十期、第十一期、第十二期和第十三期。这五个视频全部在讲二叉树，暗藏了很多递归的思想，把二叉树的原问题转化为子问题，从而解答。 一、递归1、递归的例题我们用一道二叉树的例题来复习一下递归。力扣题目如下：104. 二叉树的最大深度这道题如果纠结于二叉树的具体细节，可能会想很久，但是我们可以利用递归把原问题转化为子问题，例如在这道题中，二叉树的深度我们可以看作是左右子树的最大深度+1，而左右子树的最大深度是不是也可以用上述的思路去求的，最后到达我们的边界条件，也就是当前节点为空的时候，我们返回0即可，代码如下： 1234567891011class Solution &#123;public:    int maxDepth(TreeNode* root) &#123;        if(root == nullptr)&#123;            return 0;        &#125;        else&#123;            return max(maxDepth(root-&gt;left),maxDepth(root-&gt;right))+1;        &#125;    &#125;&#125;; 2、递归的底层原理我们在做递归的时候，函数总是return来return去的，那么函数具体的运行顺序是怎么样的呢，我们可以结合栈的特性去理解。递归运行的完整流程分为递归阶段（递） 和回归阶段（归），缺一不可：  递归阶段（递）：函数从初始调用开始，不断通过自身调用自身向 “终止条件” 靠近。每次调用都会生成新的函数帧并压入调用栈，此时当前函数的执行会暂停，等待被调用的子函数返回结果。核心目标：触达终止条件（避免无限递归）。 回归阶段（归）：当子函数触达终止条件并返回结果后，调用栈开始 “出栈”，之前暂停的函数会从断点继续执行，使用子函数的返回结果完成自身计算，并将结果返回给上一层调用。核心目标：从终止条件反向计算，最终返回初始调用的结果。  3、如何思考递归的流程1、思考题目的边界情况，识别最小子问题2、建立原问题与子问题的关系，然后设计递归逻辑3、明确函数的返回值是什么，从而设计递归函数的参数与返回值4、手动模拟 “小规模输入”...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/Aeolian.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Aeolian</div><div class="author-info-description">是否把放风筝也当硬仗才算正常</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">10</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Aeolianii"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客，技术不足，请大家多多指教</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E9%81%97%E4%BC%A0%E7%AE%97%E6%B3%95"><span class="toc-number">1.</span> <span class="toc-text">一、遗传算法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E9%81%97%E4%BC%A0%E7%AE%97%E6%B3%95%E7%9A%84%E6%A6%82%E8%BF%B0"><span class="toc-number">1.1.</span> <span class="toc-text">1、遗传算法的概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E9%81%97%E4%BC%A0%E7%AE%97%E6%B3%95%E7%9A%84%E6%A0%B8%E5%BF%83%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.2.</span> <span class="toc-text">2、遗传算法的核心步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-1%EF%BC%9A%E9%97%AE%E9%A2%98%E5%BB%BA%E6%A8%A1%E4%B8%8E%E7%BC%96%E7%A0%81%EF%BC%88%E5%B0%86-%E2%80%9C%E8%A7%A3%E2%80%9D-%E8%BD%AC%E5%8C%96%E4%B8%BA-%E2%80%9C%E6%9F%93%E8%89%B2%E4%BD%93%E2%80%9D%EF%BC%89"><span class="toc-number">1.2.1.</span> <span class="toc-text">步骤 1：问题建模与编码（将 “解” 转化为 “染色体”）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-2%EF%BC%9A%E5%88%9D%E5%A7%8B%E5%8C%96%E7%A7%8D%E7%BE%A4%EF%BC%88%E7%94%9F%E6%88%90%E5%88%9D%E5%A7%8B%E5%8F%AF%E8%A1%8C%E8%A7%A3%E9%9B%86%E5%90%88%EF%BC%89"><span class="toc-number">1.2.2.</span> <span class="toc-text">步骤 2：初始化种群（生成初始可行解集合）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-3%EF%BC%9A%E8%AE%A1%E7%AE%97%E9%80%82%E5%BA%94%E5%BA%A6%EF%BC%88%E8%AF%84%E4%BC%B0%E8%A7%A3%E7%9A%84%E4%BC%98%E5%8A%A3%EF%BC%89"><span class="toc-number">1.2.3.</span> <span class="toc-text">步骤 3：计算适应度（评估解的优劣）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%881%EF%BC%89%E7%9B%AE%E6%A0%87%E5%87%BD%E6%95%B0%E4%B8%8E%E9%80%82%E5%BA%94%E5%BA%A6%E7%9A%84%E8%BD%AC%E6%8D%A2"><span class="toc-number">1.2.3.1.</span> <span class="toc-text">（1）目标函数与适应度的转换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%882%EF%BC%89%E7%BA%A6%E6%9D%9F%E6%9D%A1%E4%BB%B6%E7%9A%84%E5%A4%84%E7%90%86%EF%BC%88%E5%85%B3%E9%94%AE%EF%BC%81%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1%E5%B8%B8%E8%80%83%EF%BC%89"><span class="toc-number">1.2.3.2.</span> <span class="toc-text">（2）约束条件的处理（关键！数学建模常考）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-4%EF%BC%9A%E9%81%97%E4%BC%A0%E6%93%8D%E4%BD%9C%EF%BC%88%E6%A0%B8%E5%BF%83%E8%BF%AD%E4%BB%A3%E7%8E%AF%E8%8A%82%EF%BC%89"><span class="toc-number">1.2.4.</span> <span class="toc-text">步骤 4：遗传操作（核心迭代环节）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%881%EF%BC%89%E9%80%89%E6%8B%A9%E6%93%8D%E4%BD%9C%EF%BC%9A%E4%BF%9D%E7%95%99%E4%BC%98%E7%A7%80%E4%B8%AA%E4%BD%93"><span class="toc-number">1.2.4.1.</span> <span class="toc-text">（1）选择操作：保留优秀个体</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%882%EF%BC%89%E4%BA%A4%E5%8F%89%E6%93%8D%E4%BD%9C%EF%BC%9A%E7%94%9F%E6%88%90%E5%AD%90%E4%BB%A3%EF%BC%88%E6%A0%B8%E5%BF%83%E5%88%9B%E6%96%B0%E7%8E%AF%E8%8A%82%EF%BC%89"><span class="toc-number">1.2.4.2.</span> <span class="toc-text">（2）交叉操作：生成子代（核心创新环节）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%883%EF%BC%89%E5%8F%98%E5%BC%82%E6%93%8D%E4%BD%9C%EF%BC%9A%E5%BC%95%E5%85%A5%E6%96%B0%E5%9F%BA%E5%9B%A0%EF%BC%88%E9%81%BF%E5%85%8D%E5%B1%80%E9%83%A8%E6%9C%80%E4%BC%98%EF%BC%89"><span class="toc-number">1.2.4.3.</span> <span class="toc-text">（3）变异操作：引入新基因（避免局部最优）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-5%EF%BC%9A%E5%88%A4%E6%96%AD%E5%81%9C%E6%AD%A2%E6%9D%A1%E4%BB%B6%EF%BC%88%E8%BF%AD%E4%BB%A3%E7%BB%88%E6%AD%A2%EF%BC%89"><span class="toc-number">1.2.5.</span> <span class="toc-text">步骤 5：判断停止条件（迭代终止）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E9%81%97%E4%BC%A0%E7%AE%97%E6%B3%95%E7%9A%84%E5%85%B3%E9%94%AE%E5%8F%82%E6%95%B0%E8%B0%83%E4%BC%98%EF%BC%88%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1%E5%BE%97%E5%88%86%E5%85%B3%E9%94%AE%EF%BC%89"><span class="toc-number">1.3.</span> <span class="toc-text">3、遗传算法的关键参数调优（数学建模得分关键）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81%E9%81%97%E4%BC%A0%E7%AE%97%E6%B3%95%E5%9C%A8%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1%E4%B8%AD%E7%9A%84%E5%85%B8%E5%9E%8B%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.4.</span> <span class="toc-text">4、遗传算法在数学建模中的典型应用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5%E3%80%81%E9%81%97%E4%BC%A0%E7%AE%97%E6%B3%95%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9%E4%B8%8E%E6%94%B9%E8%BF%9B%E6%96%B9%E5%90%91"><span class="toc-number">1.5.</span> <span class="toc-text">5、遗传算法的优缺点与改进方向</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%82%B9"><span class="toc-number">1.5.1.</span> <span class="toc-text">优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%BA%E7%82%B9"><span class="toc-number">1.5.2.</span> <span class="toc-text">缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%B9%E8%BF%9B%E6%96%B9%E5%90%91%EF%BC%88%E6%95%B0%E6%A8%A1%E5%8A%A0%E5%88%86%E7%82%B9%EF%BC%89"><span class="toc-number">1.5.3.</span> <span class="toc-text">改进方向（数模加分点）</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%A8%A1%E6%8B%9F%E9%80%80%E7%81%AB%E7%AE%97%E6%B3%95"><span class="toc-number">2.</span> <span class="toc-text">二、模拟退火算法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E6%A8%A1%E6%8B%9F%E9%80%80%E7%81%AB%E7%AE%97%E6%B3%95%E7%9A%84%E6%A6%82%E8%BF%B0"><span class="toc-number">2.1.</span> <span class="toc-text">1、模拟退火算法的概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E7%AE%97%E6%B3%95%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86%E4%B8%8E%E5%85%B3%E9%94%AE%E5%85%AC%E5%BC%8F"><span class="toc-number">2.2.</span> <span class="toc-text">2、算法核心原理与关键公式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%881%EF%BC%89-Metropolis-%E5%87%86%E5%88%99%EF%BC%88%E6%8E%A5%E5%8F%97%E6%96%B0%E8%A7%A3%E7%9A%84%E6%A6%82%E7%8E%87%EF%BC%89"><span class="toc-number">2.2.1.</span> <span class="toc-text">（1） Metropolis 准则（接受新解的概率）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%882%EF%BC%89-%E6%B8%A9%E5%BA%A6%E8%A1%B0%E5%87%8F%E7%AD%96%E7%95%A5%EF%BC%88%E9%99%8D%E6%B8%A9-schedule%EF%BC%89"><span class="toc-number">2.2.2.</span> <span class="toc-text">（2） 温度衰减策略（降温 schedule）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%883%EF%BC%89-%E8%BF%AD%E4%BB%A3%E7%BB%88%E6%AD%A2%E6%9D%A1%E4%BB%B6"><span class="toc-number">2.2.3.</span> <span class="toc-text">（3） 迭代终止条件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E7%AE%97%E6%B3%95%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B"><span class="toc-number">2.3.</span> <span class="toc-text">3、算法完整流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%881%EF%BC%89%E5%88%9D%E5%A7%8B%E5%8C%96%E5%8F%82%E6%95%B0"><span class="toc-number">2.3.1.</span> <span class="toc-text">（1）初始化参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%882%EF%BC%89%E6%B8%A9%E5%BA%A6%E5%BE%AA%E7%8E%AF%EF%BC%88%E5%A4%96%E5%B1%82%E5%BE%AA%E7%8E%AF%EF%BC%89"><span class="toc-number">2.3.2.</span> <span class="toc-text">（2）温度循环（外层循环）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%883%EF%BC%89%E8%BE%93%E5%87%BA%E7%BB%93%E6%9E%9C"><span class="toc-number">2.3.3.</span> <span class="toc-text">（3）输出结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81%E6%95%B0%E6%A8%A1%E4%B8%AD%E7%9A%84%E5%85%B3%E9%94%AE%E8%AE%BE%E8%AE%A1"><span class="toc-number">2.4.</span> <span class="toc-text">4、数模中的关键设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5%E3%80%81%E7%AE%97%E6%B3%95%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-number">2.5.</span> <span class="toc-text">5、算法优缺点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%82%B9-1"><span class="toc-number">2.5.1.</span> <span class="toc-text">优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%BA%E7%82%B9-1"><span class="toc-number">2.5.2.</span> <span class="toc-text">缺点</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/09/03/%E6%AF%8F%E5%A4%A9%E8%AE%A4%E8%AF%86%E4%B8%80%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E5%90%AF%E5%8F%91%E6%80%A7%E7%AE%97%E6%B3%95/" title="每天认识一模型--启发性算法"><img src="/img/post10.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="每天认识一模型--启发性算法"/></a><div class="content"><a class="title" href="/2025/09/03/%E6%AF%8F%E5%A4%A9%E8%AE%A4%E8%AF%86%E4%B8%80%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E5%90%AF%E5%8F%91%E6%80%A7%E7%AE%97%E6%B3%95/" title="每天认识一模型--启发性算法">每天认识一模型--启发性算法</a><time datetime="2025-09-03T04:14:26.000Z" title="发表于 2025-09-03 12:14:26">2025-09-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/07/30/%E7%81%B5%E7%A5%9E%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89%E2%80%94%E2%80%94%E4%BA%8C%E5%8F%89%E6%A0%91/" title="灵神基础算法系列（四）--二叉树"><img src="/img/post9.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="灵神基础算法系列（四）--二叉树"/></a><div class="content"><a class="title" href="/2025/07/30/%E7%81%B5%E7%A5%9E%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89%E2%80%94%E2%80%94%E4%BA%8C%E5%8F%89%E6%A0%91/" title="灵神基础算法系列（四）--二叉树">灵神基础算法系列（四）--二叉树</a><time datetime="2025-07-30T13:09:00.000Z" title="发表于 2025-07-30 21:09:00">2025-07-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/07/29/%E6%AF%8F%E5%A4%A9%E8%AE%A4%E8%AF%86%E4%B8%80%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E6%95%B4%E6%95%B0%E8%A7%84%E5%88%92/" title="每天认识一模型--规划求解之整数规划"><img src="/img/post8.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="每天认识一模型--规划求解之整数规划"/></a><div class="content"><a class="title" href="/2025/07/29/%E6%AF%8F%E5%A4%A9%E8%AE%A4%E8%AF%86%E4%B8%80%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E6%95%B4%E6%95%B0%E8%A7%84%E5%88%92/" title="每天认识一模型--规划求解之整数规划">每天认识一模型--规划求解之整数规划</a><time datetime="2025-07-29T04:40:17.000Z" title="发表于 2025-07-29 12:40:17">2025-07-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/07/21/%E7%81%B5%E7%A5%9E%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%89%EF%BC%89%E2%80%94%E2%80%94%E9%93%BE%E8%A1%A8%E5%90%88%E9%9B%86/" title="灵神基础算法系列（三）--链表合集"><img src="/img/post7.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="灵神基础算法系列（三）--链表合集"/></a><div class="content"><a class="title" href="/2025/07/21/%E7%81%B5%E7%A5%9E%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%89%EF%BC%89%E2%80%94%E2%80%94%E9%93%BE%E8%A1%A8%E5%90%88%E9%9B%86/" title="灵神基础算法系列（三）--链表合集">灵神基础算法系列（三）--链表合集</a><time datetime="2025-07-21T05:48:01.000Z" title="发表于 2025-07-21 13:48:01">2025-07-21</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/07/21/%E6%AF%8F%E5%A4%A9%E8%AE%A4%E8%AF%86%E4%B8%80%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E8%A7%84%E5%88%92%E6%B1%82%E8%A7%A3%E4%B9%8B%E9%9D%9E%E7%BA%BF%E6%80%A7%E8%A7%84%E5%88%92/" title="每天认识一模型--规划求解之非线性规划"><img src="/img/post6.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="每天认识一模型--规划求解之非线性规划"/></a><div class="content"><a class="title" href="/2025/07/21/%E6%AF%8F%E5%A4%A9%E8%AE%A4%E8%AF%86%E4%B8%80%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E8%A7%84%E5%88%92%E6%B1%82%E8%A7%A3%E4%B9%8B%E9%9D%9E%E7%BA%BF%E6%80%A7%E8%A7%84%E5%88%92/" title="每天认识一模型--规划求解之非线性规划">每天认识一模型--规划求解之非线性规划</a><time datetime="2025-07-20T16:12:53.000Z" title="发表于 2025-07-21 00:12:53">2025-07-21</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Aeolian</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css"/><script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script><div id="aplayer"> </div><script>const ap = new APlayer({
+  container: document.getElementById('aplayer'),
+  fixed: true,
+  autoplay: false,
+  theme: '#3EAF7C',
+  audio: [
+    {
+      name: 'Anomaly',
+      artist: 'Lights & Motion',
+      url: '/music/Anomaly.mp3',
+      cover: '/music/Anomaly.jpg'
+    }
+  ]
+});
+
+ap.on('error', (e) => {
+  console.error('���ּ���ʧ��:', e);
+});</script></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
